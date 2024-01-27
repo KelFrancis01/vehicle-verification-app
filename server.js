@@ -43,7 +43,7 @@ app.post('/Signup', (req, res) => {
 //creating api for Login
 
 app.post('/Login', (req, res) => {
-    const sql = 'SELECT * FROM user WHERE email = ?';
+    const sql = "SELECT * FROM user WHERE email = ?";
     db.query(sql, [req.body.email], (err, data) => {
         if(err) return res.json({Error:"Error Logging Into Dashboard"});
         if(data.length > 0) {
@@ -62,8 +62,29 @@ app.post('/Login', (req, res) => {
     })
 })
 
+//creating api for reporting stolen vehicles
+app.post('/ReportVehicle', (req, res) => {
+    const sql = "INSERT INTO stolenvehicles (`vin`,`brand`,`model`, `owner`, `last_location`,`date_stolen`,`reportedby`) VALUES (?)"; //defining function to enter SignUp details into user table in the database
+
+    const values = [
+        req.body.vin,
+        req.body.brand,
+        req.body.model,
+        req.body.owner,
+        req.body.last_location,
+        req.body.date_stolen,
+        req.body.reportedby
+    ];
+
+    db.query(sql, [values], (err) => {
+        if (err) return res.json({Error:"Error inserting data into database"});
+        return res.json({Status:"Success"});
+    });
+});
+
+
 // API Endpoint to Fetch Stolen Vehicle Information by VIN/Chassis Number
-app.get('/stolenvehicles/:vin', (req, res) => {
+app.get('/Home/:vin', (req, res) => {
     const vin = req.params.vin;
     const sql = 'SELECT * FROM stolenvehicles WHERE vin = ?';
     db.query(sql, vin, (err, results) => {
